@@ -1,11 +1,11 @@
 import { readFileSync } from "fs";
 import { createInterface } from "readline";
 import { exit } from "process";
+import { Scanner } from "./Scanner";
+import { checkForError, recordError } from "./error";
 
-class Lox {
-  hadError = false;
-
-  main(args: Array<string>): void {
+export class Lox {
+  main(args: string[]): void {
     if (args.length > 1) {
       console.log("Usage: lox [script]");
       exit(64);
@@ -18,8 +18,8 @@ class Lox {
 
   private runFile(path: string): void {
     const src = readFileSync(path, "utf-8");
-    this.run(src);
-    if (this.hadError) exit(65);
+    Lox.run(src);
+    if (checkForError()) exit(65);
   }
 
   private runPrompt(): void {
@@ -31,27 +31,18 @@ class Lox {
 
     readline.prompt();
     readline.on("line", (input) => {
-      this.run(input);
+      Lox.run(input);
       readline.prompt();
-      this.hadError = false;
+      recordError(false);
     });
   }
 
-  private run(src: string): void {
-    const scanner = Scanner(src);
+  private static run(src: string): void {
+    const scanner = new Scanner(src);
     const tokens = scanner.scanTokens();
 
     for (let token in tokens) {
       console.log(token);
     }
-  }
-
-  private error(line: number, message: string): void {
-    this.report(line, "", message);
-  }
-
-  private report(line: number, where: string, message: string) {
-    console.error(`[line ${line}] Error ${where}: ${message}`);
-    this.hadError = true;
   }
 }
