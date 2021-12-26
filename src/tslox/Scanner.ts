@@ -10,28 +10,28 @@ export class Scanner {
     this.source = source;
   }
 
-  private start: number = 0;
-  private current: number = 0;
-  private line: number = 1;
+  private start = 0;
+  private current = 0;
+  private line = 1;
 
-  private keywords = new Map([
-    ['and', TokenType.And],
-    ['class', TokenType.Class],
-    ['else', TokenType.Else],
-    ['false', TokenType.False],
-    ['for', TokenType.For],
-    ['fun', TokenType.Fun],
-    ['if', TokenType.If],
-    ['nil', TokenType.Nil],
-    ['or', TokenType.Or],
-    ['print', TokenType.Print],
-    ['return', TokenType.Return],
-    ['super', TokenType.Super],
-    ['this', TokenType.This],
-    ['true', TokenType.True],
-    ['var', TokenType.Var],
-    ['while', TokenType.While],
-  ])
+  private keywords = {
+    'and': TokenType.And,
+    'class': TokenType.Class,
+    'else': TokenType.Else,
+    'false': TokenType.False,
+    'for': TokenType.For,
+    'fun': TokenType.Fun,
+    'if': TokenType.If,
+    'nil': TokenType.Nil,
+    'or': TokenType.Or,
+    'print': TokenType.Print,
+    'return': TokenType.Return,
+    'super': TokenType.Super,
+    'this': TokenType.This,
+    'true': TokenType.True,
+    'var': TokenType.Var,
+    'while': TokenType.While
+  }
 
   scanTokens(): Token[] {
     while (!this.isAtEnd()) {
@@ -126,7 +126,7 @@ export class Scanner {
     while (Scanner.isAlphaNumeric(this.peek())) this.advance();
 
     const text = this.source.substring(this.start, this.current)
-    const type = this.keywords.get(text)
+    const type = this.keywords[text]
     this.addToken(type == null ? type : TokenType.Identifier)
   }
 
