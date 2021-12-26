@@ -1,18 +1,37 @@
-import { Token } from "./Token";
-import { TokenType } from "./TokenType";
-import { error } from "./error";
+import {Token} from "./Token";
+import {TokenType} from "./TokenType";
+import {error} from "./error";
 
 export class Scanner {
   source: string;
   tokens: Token[];
 
+  constructor(source: string) {
+    this.source = source;
+  }
+
   private start: number = 0;
   private current: number = 0;
   private line: number = 1;
 
-  constructor(source: string) {
-    this.source = source;
-  }
+  private keywords = new Map([
+    ['and', TokenType.And],
+    ['class', TokenType.Class],
+    ['else', TokenType.Else],
+    ['false', TokenType.False],
+    ['for', TokenType.For],
+    ['fun', TokenType.Fun],
+    ['if', TokenType.If],
+    ['nil', TokenType.Nil],
+    ['or', TokenType.Or],
+    ['print', TokenType.Print],
+    ['return', TokenType.Return],
+    ['super', TokenType.Super],
+    ['this', TokenType.This],
+    ['true', TokenType.True],
+    ['var', TokenType.Var],
+    ['while', TokenType.While],
+  ])
 
   scanTokens(): Token[] {
     while (!this.isAtEnd()) {
@@ -88,13 +107,63 @@ export class Scanner {
       case "\n":
         this.line++;
         break;
-      default:
-        error(this.line, "Unexpected character.");
+      case '"':
+        this.string();
         break;
+      default:
+        if (Scanner.isDigit(c)) {
+          this.number();
+        } else if (Scanner.isAlpha(c)) {
+          this.identifier();
+        } else {
+          error(this.line, "Unexpected character.");
+          break;
+        }
     }
   }
 
-  private match(expected: string) {
+  private identifier(): void {
+    while (Scanner.isAlphaNumeric(this.peek())) this.advance();
+
+    const text = this.source.substring(this.start, this.current)
+    const type = this.keywords.get(text)
+    this.addToken(type == null ? type : TokenType.Identifier)
+  }
+
+  private number(): void {
+    while (Scanner.isDigit(this.peek(0))) this.advance();
+
+    // Look for a fractional part.
+    if (this.peek(0) == "." && Scanner.isDigit(this.peek(1))) {
+      // Consume the '.'
+      this.advance();
+
+      while (Scanner.isDigit(this.peek())) this.advance();
+    }
+
+    this.addToken(
+      TokenType.Number,
+      parseFloat(this.source.substring(this.start, this.current))
+    );
+  }
+
+  private string(): void {
+    if (this.peek() != '"' && !this.isAtEnd()) {
+      if (this.peek() == "\n") this.line++;
+      this.advance();
+    }
+
+    if (this.isAtEnd()) return error(this.line, "Unterminated string");
+
+    // The closing ".
+    this.advance();
+
+    // Trim the surrounding quotes.
+    const value = this.source.substring(this.start + 1, this.current - 1);
+    this.addToken(TokenType.String, value);
+  }
+
+  private match(expected: string): Boolean {
     if (this.isAtEnd()) return false;
     if (this.source.charAt(this.current) != expected) return false;
 
@@ -102,13 +171,25 @@ export class Scanner {
     return true;
   }
 
-  private peek(): string {
-    if (this.isAtEnd()) return "\0";
+  private peek(range: number = 0): string {
+    if (this.isAtEnd(this.current + range)) return "\0";
     return this.source.charAt(this.current);
   }
 
-  private isAtEnd(): Boolean {
-    return this.current >= this.source.length;
+  private static isAlpha(c: string): boolean {
+    return (c.toLowerCase() >= "a" && c.toLowerCase() <= "z") || c == "_";
+  }
+
+  private static isDigit(c: string): boolean {
+    return c >= "0" && c <= "9";
+  }
+
+  private static isAlphaNumeric(c: string): boolean {
+    return Scanner.isAlpha(c) || Scanner.isDigit(c);
+  }
+
+  private isAtEnd(c: number = this.current): Boolean {
+    return c >= this.source.length;
   }
 
   private advance(): string {

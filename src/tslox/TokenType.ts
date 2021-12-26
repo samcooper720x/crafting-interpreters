@@ -30,7 +30,7 @@ export enum TokenType {
   // Keywords.
   And,
   Class,
-  ELse,
+  Else,
   False,
   Fun,
   For,
