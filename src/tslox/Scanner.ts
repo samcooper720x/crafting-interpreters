@@ -8,6 +8,7 @@ export class Scanner {
 
   constructor(source: string) {
     this.source = source;
+    this.tokens = []
   }
 
   private start = 0;
@@ -127,7 +128,7 @@ export class Scanner {
 
     const text = this.source.substring(this.start, this.current)
     const type = this.keywords[text]
-    this.addToken(type == null ? type : TokenType.Identifier)
+    this.addToken(type == null ? TokenType.Identifier : type)
   }
 
   private number(): void {
@@ -148,7 +149,7 @@ export class Scanner {
   }
 
   private string(): void {
-    if (this.peek() != '"' && !this.isAtEnd()) {
+    while (this.peek() != '"' && !this.isAtEnd()) {
       if (this.peek() == "\n") this.line++;
       this.advance();
     }

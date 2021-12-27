@@ -5,24 +5,24 @@ import { Scanner } from "./Scanner";
 import { checkForError, recordError } from "./error";
 
 export class Lox {
-  main(args: string[]): void {
+  static main(args: string[]): void {
     if (args.length > 1) {
       console.log("Usage: lox [script]");
       exit(64);
     } else if (args.length === 1) {
-      this.runFile(args[0]);
+      Lox.runFile(args[0]);
     } else {
-      this.runPrompt();
+      Lox.runPrompt();
     }
   }
 
-  private runFile(path: string): void {
+  private static runFile(path: string): void {
     const src = readFileSync(path, "utf-8");
     Lox.run(src);
     if (checkForError()) exit(65);
   }
 
-  private runPrompt(): void {
+  private static runPrompt(): void {
     const readline = createInterface({
       input: process.stdin,
       output: process.stdout,
@@ -41,8 +41,8 @@ export class Lox {
     const scanner = new Scanner(src);
     const tokens = scanner.scanTokens();
 
-    for (let token in tokens) {
-      console.log(token);
-    }
+    tokens.forEach((token) => console.log(`token type of ${token.type} and lexeme of ${token.lexeme}`))
   }
 }
+
+Lox.main(process.argv.slice(2))
