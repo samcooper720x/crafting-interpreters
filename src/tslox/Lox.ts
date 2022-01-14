@@ -41,8 +41,10 @@ export class Lox {
     const scanner = new Scanner(src);
     const tokens = scanner.scanTokens();
 
-    tokens.forEach((token) => console.log(`token type of ${token.type} and lexeme of ${token.lexeme}`))
+    tokens.forEach((token) =>
+      console.log(`token type of ${token.type} and lexeme of ${token.lexeme}`)
+    );
   }
 }
 
-Lox.main(process.argv.slice(2))
+Lox.main(process.argv.slice(2));

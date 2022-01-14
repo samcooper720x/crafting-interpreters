@@ -1,6 +1,6 @@
-import {Token} from "./Token";
-import {TokenType} from "./TokenType";
-import {error} from "./error";
+import { TokenType } from "./TokenType";
+import { Token } from "./Token";
+import { error } from "./error";
 
 export class Scanner {
   source: string;
@@ -8,7 +8,7 @@ export class Scanner {
 
   constructor(source: string) {
     this.source = source;
-    this.tokens = []
+    this.tokens = [];
   }
 
   private start = 0;
@@ -16,23 +16,23 @@ export class Scanner {
   private line = 1;
 
   private keywords = {
-    'and': TokenType.And,
-    'class': TokenType.Class,
-    'else': TokenType.Else,
-    'false': TokenType.False,
-    'for': TokenType.For,
-    'fun': TokenType.Fun,
-    'if': TokenType.If,
-    'nil': TokenType.Nil,
-    'or': TokenType.Or,
-    'print': TokenType.Print,
-    'return': TokenType.Return,
-    'super': TokenType.Super,
-    'this': TokenType.This,
-    'true': TokenType.True,
-    'var': TokenType.Var,
-    'while': TokenType.While
-  }
+    and: TokenType.And,
+    class: TokenType.Class,
+    else: TokenType.Else,
+    false: TokenType.False,
+    for: TokenType.For,
+    fun: TokenType.Fun,
+    if: TokenType.If,
+    nil: TokenType.Nil,
+    or: TokenType.Or,
+    print: TokenType.Print,
+    return: TokenType.Return,
+    super: TokenType.Super,
+    this: TokenType.This,
+    true: TokenType.True,
+    var: TokenType.Var,
+    while: TokenType.While,
+  };
 
   scanTokens(): Token[] {
     while (!this.isAtEnd()) {
@@ -126,9 +126,9 @@ export class Scanner {
   private identifier(): void {
     while (Scanner.isAlphaNumeric(this.peek())) this.advance();
 
-    const text = this.source.substring(this.start, this.current)
-    const type = this.keywords[text]
-    this.addToken(type == null ? TokenType.Identifier : type)
+    const text = this.source.substring(this.start, this.current);
+    const type = this.keywords[text];
+    this.addToken(type == null ? TokenType.Identifier : type);
   }
 
   private number(): void {
@@ -164,7 +164,7 @@ export class Scanner {
     this.addToken(TokenType.String, value);
   }
 
-  private match(expected: string): Boolean {
+  private match(expected: string): boolean {
     if (this.isAtEnd()) return false;
     if (this.source.charAt(this.current) != expected) return false;
 
@@ -172,7 +172,7 @@ export class Scanner {
     return true;
   }
 
-  private peek(range: number = 0): string {
+  private peek(range = 0): string {
     if (this.isAtEnd(this.current + range)) return "\0";
     return this.source.charAt(this.current);
   }
@@ -189,7 +189,7 @@ export class Scanner {
     return Scanner.isAlpha(c) || Scanner.isDigit(c);
   }
 
-  private isAtEnd(c: number = this.current): Boolean {
+  private isAtEnd(c: number = this.current): boolean {
     return c >= this.source.length;
   }
 
