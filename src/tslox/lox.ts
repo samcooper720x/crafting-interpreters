@@ -1,7 +1,7 @@
 import { readFileSync } from "fs";
 import { createInterface } from "readline";
 import { exit } from "process";
-import { Scanner } from "./Scanner";
+import { Scanner } from "./scanner";
 import { checkForError, recordError } from "./error";
 
 export class Lox {

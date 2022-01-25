@@ -1,5 +1,5 @@
-import { TokenType } from "./TokenType";
-import { Token } from "./Token";
+import { TokenType } from "./token-type";
+import { Token } from "./token";
 import { error } from "./error";
 
 export class Scanner {
